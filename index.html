@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="description" content="AWatch Application"/>
+    <title>Digital Watch</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css"/>
+</head>
+
+<body>
+<canvas id="myCanvas">
+</canvas>
+<div id="live_watch">
+	<div id="info_row">
+	<div id="info_row_wrangler">
+		<div id="stepbox">
+			<div id="step_img"></div>
+			<div id="step_dist">0</div>
+		</div>
+		<div id="batterybin">
+			<div id='batterybox'>
+		    	<div id='battery_fill'></div>
+		    </div>
+			<div id='battery_rec'></div>
+		</div>
+	</div>
+    </div>
+    
+    <div id='rec_time'>
+        <div id='str_hours'></div>
+        <div id='str_console'>:</div>
+        <div id='str_minutes'></div>
+        <div id='zonebox'>
+            <div id='str_tz'></div>
+        	<div id='str_ampm'></div>
+        </div>
+    </div>
+
+    <div id='rec_string_time'>
+        <div id='str_day'></div>
+    </div>
+    
+    <div id='lowrow'>
+    <div id='low_row_wrangler'>
+	    <div id='weatherbox'>
+	    	<div id="weather"></div>
+	    	<div id="weather_word"></div>
+	    </div>
+	    <div id="timezone2box">
+	    	<div id="timezone2t"><div id='tz2_hour'></div>:<div id='tz2_min'></div>
+	    							<div id="tz2_box">
+	    								<div id="tz2_ampm"></div>
+    									<div id="tz2_tz"></div>
+   									</div>
+			</div>
+	    	<div id="timezone2d"><div id='tz2_day'></div>
+	    	</div>
+	    </div>
+	</div>
+    </div>
+</div>
+</body>
+
+<script src="js/main.js"></script>
+</html>

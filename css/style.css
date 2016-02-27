@@ -1,0 +1,221 @@
+@font-face {
+    font-family: "Roboto";
+    src: url('Roboto-Light.ttf');
+    font-weight: 300;
+}
+
+@font-face {
+    font-family: "Roboto";
+    src: url('Roboto-Regular.ttf');
+    font-weight: 400;
+}
+
+@font-face {
+    font-family: "Roboto";
+    src: url('Roboto-Bold.ttf');
+    font-weight: 700;
+}
+
+body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    margin: 0;
+    font-family: 'Roboto' !important;
+}
+
+canvas {
+    position: absolute;
+    z-index: 100;
+    top: 0px;
+    left: 0px;
+}
+
+div {
+    z-index: -1;
+}
+
+#info_row {
+	position: absolute;
+	width: 100%;
+	margin-top: 40px;
+}
+
+#info_row_wrangler {
+	width: 60%;
+	margin: 0px auto;
+}
+
+#stepbox {
+	float: left;
+}
+
+#step_dist {
+	font-size: 150%;
+	color: rgb(120, 118, 120);
+	font-weight: 400;
+	padding: 3px 6px;
+}
+
+#weather {
+	font-size: 175%;
+	color: #bde52a;
+	font-weight: 400;
+	text-align: left;
+	padding-left: 10px;
+}
+
+#weather_word {
+	font-size: 100%;
+	font-weight: 300;
+	color: #bde52a;
+	padding-left: 10px;
+}
+
+#timezone2t, #timezone2d {
+	font-size: 120%;
+	color: rgb(243, 241, 243);
+	font-weight: 400;
+	padding: 3px 6px;
+	text-align: right;
+}
+
+#tz2_box {
+	display: inline-block;
+	padding-left: 2px;
+}
+
+#tz2_ampm, #tz2_tz {
+	display: inline-block;
+	font-size: 70%;
+	color: rgb(243, 241, 243);
+	font-weight: 700;
+}
+
+#tz2_tz {
+	font-weight: 400;
+	color: rgb(120, 118, 120);
+}
+
+#tz2_hour, #tz2_min, #tz2_day {
+	display: inline-block;
+}
+
+#tz2_day {
+	color: rgb(200, 198, 200);
+}
+
+#step_img {
+	content: url(../images/shoe.png);
+	margin: 0px auto;
+}
+
+#lowrow {
+	position: absolute;
+	width: 100%;
+	margin-top: 250px;
+}
+
+#low_row_wrangler {
+	width: 65%;
+	margin: 0px auto;
+}
+
+#weatherbox {
+	display: inline-block;
+	float: left;
+}
+
+#timezone2box {
+	display: inline-block;
+	float: right;
+}
+
+#batterybin {
+	display: inline-block;
+	float: right;
+	margin-top: 15px;
+}
+
+#batterybox {
+	display: inline-block;
+	border: 2px solid rgb(243, 241, 243);
+	width: 20px;
+	height: 9px;
+	margin-right: 5px;
+}
+
+#battery_rec {
+	display: inline-block;
+    font-size: 110%;
+    font-weight: 700;
+    color: #bde52a;
+}
+
+#battery_fill {
+	background-color: rgb(243, 241, 243);
+	height: 9px;
+	width: 0px;
+}
+
+#rec_time {
+	position: absolute;
+	width: 100%;
+	margin: 0px auto;
+	text-align: center;
+	margin-top: 100px;
+}
+
+#str_hours {
+	display: inline-block;
+    font-size: 570%;
+    color: rgb(243, 241, 243);
+    font-weight: 400;
+}
+
+#str_console {
+	display: inline-block;
+    font-size: 420%;
+    color: rgb(243, 241, 243);
+    font-weight: 300;
+    vertical-align: 16%;
+}
+
+#str_minutes {
+	display: inline-block;
+    font-size: 570%;
+    color: rgb(243, 241, 243);
+    font-weight: 300;
+}
+
+#zonebox {
+	display: inline-block;
+	padding-left: 5px;
+	text-align: left;
+}
+
+#str_tz, #str_ampm {
+    font-size: 170%;
+    color: rgb(243, 241, 243);
+    font-weight: 700;    
+}
+
+#str_tz {
+	color: rgb(120, 118, 120);
+	font-weight: 400;
+	margin-bottom: 12px;
+}
+
+#rec_string_time {
+	position: absolute;
+	width: 100%;
+	margin: 0px auto;
+	text-align: center;
+	margin-top: 200px;
+}
+
+#str_day {
+	display: inline-block;
+	font-size: 160%;
+    color: rgb(200, 198, 200);
+}

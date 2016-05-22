@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<widget xmlns="http://www.w3.org/ns/widgets" xmlns:tizen="http://tizen.org/ns/widgets" id="http://dendriticspine.com/AWatch" version="1.0.0" viewmodes="maximized">
+<widget xmlns="http://www.w3.org/ns/widgets" xmlns:tizen="http://tizen.org/ns/widgets" id="http://dendriticspine.com/AWatch" version="1.0.5" viewmodes="maximized">
     <access origin="http://api.wunderground.com" subdomains="true"></access>
     <tizen:application id="S84lpwNwTL.AWatch" package="S84lpwNwTL" required_version="2.3.1" ambient_support="enable"/>
     <tizen:category name="http://tizen.org/category/wearable_clock"/>
@@ -7,6 +7,7 @@
     <feature name="http://tizen.org/feature/screen.size.all"/>
     <feature name="http://tizen.org/feature/humanactivitymonitor"/>
     <feature name="http://tizen.org/feature/sensor.pedometer"/>
+    <feature name="http://tizen.org/feature/input.rotating_bezel"/>
     <icon src="awatch_roundss.png" height="117" width="117"/>
     <name>AWatch</name>
     <tizen:privilege name="http://tizen.org/privilege/alarm"/>

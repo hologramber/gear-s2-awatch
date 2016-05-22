@@ -1,37 +1,19 @@
 var flagConsole = false,
     battery = navigator.battery || navigator.webkitBattery || navigator.mozBattery,
-    interval, canvas, context, clockRadius, 
+    interval, canvas, context, clockRadius,
     step_ts = 0,
     thirtyCheck = 0,
     currentDate = '0',
     tz1 = 'US/Pacific', 
-    tz1abbr = 'P-T',
+    tz1abbr = 'PDT',
     tz2 = 'Asia/Tokyo',
     tz2abbr = 'JST',
-    timeOffset = 10, 
+    timeOffset = 0, 
+    tz1_24h = '12',
+    tz2_24h = '12',
+    tempDisplay = 'Fahrenheit',
     accentColor = '#BDE52A',
-    weatherAPI = '0a000a00a0000a';
-
-function settingsFromFile() {
-	var file, awatchSettings;
-	function onsuccess(dir) {
-		file = dir.resolve('awatchdata.txt');
- 		if (file.isDirectory === false) {
-			file.readAsText(
-			function(str) { 
-				awatchSettings = str.split(",");
-				tz1 = awatchSettings[0];
-				tz2 = awatchSettings[1];
-				timeOffset = awatchSettings[2];
-				accentColor = awatchSettings[3];
-				weatherAPI = awatchSettings[4];
-				tz1abbr = awatchSettings[5];
-				tz2abbr = awatchSettings[6];
-			}, null, 'UTF-8' );
-		}
-	}
-	tizen.filesystem.resolve('documents', onsuccess, null, 'r');
-}
+    weatherAPI = 'api-key-from-wu';
 
 function loadWeatherData() {
 	var options = {
@@ -53,8 +35,13 @@ function loadWeatherData() {
 		xmlhttp.onreadystatechange = function() {
 		    if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
 		        xmlDoc = xmlhttp.responseXML;
-	            temperature = xmlDoc.getElementsByTagName('temp_f')[0].childNodes[0].nodeValue;
-	            temperature = Math.round(temperature) + "°F";
+		        if (tempDisplay == 'Celsius') {
+		            temperature = xmlDoc.getElementsByTagName('temp_c')[0].childNodes[0].nodeValue;
+		            temperature = Math.round(temperature) + "°C";
+		        } else {
+		            temperature = xmlDoc.getElementsByTagName('temp_f')[0].childNodes[0].nodeValue;
+		            temperature = Math.round(temperature) + "°F";		        	
+		        }
 	            localStorage.setItem('com.dendriticspine.awatch.temp', temperature);
 	            wword = xmlDoc.getElementsByTagName('weather')[0].childNodes[0].nodeValue;
 	            localStorage.setItem('com.dendriticspine.awatch.weather', wword);
@@ -71,12 +58,49 @@ function loadWeatherData() {
         str_wword.innerHTML = wword;
         str_weather.innerHTML = temperature;
 	}
-	navigator.geolocation.getCurrentPosition(successCallback, failureCallback, options);
+	if (weatherAPI == 'api-key-from-wu') {
+        str_wword.innerHTML = 'at sky.';
+        str_weather.innerHTML = 'Look';
+	} else {
+		navigator.geolocation.getCurrentPosition(successCallback, failureCallback, options);
+	}
+}
+
+function settingsFromFile() {
+	var file, awatchSettings;
+	function onsuccess(dir) {
+		file = dir.resolve('awatchdata.txt');
+ 		if (file.isDirectory === false) {
+			file.readAsText(
+			function(str) { 
+				awatchSettings = str.split(",");
+				tz1 = awatchSettings[0];
+				tz2 = awatchSettings[1];
+				timeOffset = awatchSettings[2];
+				accentColor = awatchSettings[3];
+				weatherAPI = awatchSettings[4];
+				tz1abbr = awatchSettings[5];
+				tz2abbr = awatchSettings[6];
+				if (awatchSettings.length == 10) {
+					tz1_24h = awatchSettings[7];
+					tz2_24h = awatchSettings[8];
+					tempDisplay = awatchSettings[9];
+				}
+			    document.getElementById('str_tz').innerHTML = tz1abbr;
+			    document.getElementById('tz2_tz').innerHTML = tz2abbr;
+			    document.getElementById('battery_rec').style.color = accentColor;
+			    document.getElementById('weather').style.color = accentColor;
+			    document.getElementById('weather_word').style.color = accentColor;
+			    loadWeatherData();
+			}, null, 'UTF-8' );
+		}
+	}
+	tizen.filesystem.resolve('documents', onsuccess, null, 'r');
 }
 
 function updateTime() {
     var date;
-    date = tizen.time.getCurrentDateTime();
+    date = tizen.time.getCurrentDateTime().toTimezone(tz1);
     date.setMinutes(date.getMinutes() + parseInt(timeOffset,10));
     if (date.getMinutes() <= 30 && thirtyCheck !== 1) {
     	loadWeatherData();
@@ -90,7 +114,6 @@ function updateTime() {
 	    localStorage.setItem('com.dendriticspine.awatch.stepcount', step_ts);
 	    currentDate = date.getDate();
 	}
-	date = date.toTimezone(tz1);
     return date;
 }
 
@@ -112,11 +135,10 @@ function displayWeekDay2(date2) {
         get_day2 = date2.getDay(),
         tz2_allday,
         arr_day2 = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-        arr_month2 = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'], 
         get_date2 = date2.getDate(),
-        month2 = date2.getMonth();
+        month2 = date2.getMonth() + 1;
 
-    tz2_allday = arr_day2[get_day2] + ' ' + arr_month2[month2] + '/' + get_date2;
+    tz2_allday = arr_day2[get_day2] + ' ' + month2 + '/' + get_date2;
     tz2_day.innerHTML = tz2_allday;
 }
 
@@ -125,60 +147,76 @@ function displayTime() {
         str_console = document.getElementById('str_console'),
         str_minutes = document.getElementById('str_minutes'),
         str_ampm = document.getElementById('str_ampm'),
-        str_tz = document.getElementById('str_tz'),
         tz2_hour = document.getElementById('tz2_hour'),
         tz2_min = document.getElementById('tz2_min'),
         tz2_ampm = document.getElementById('tz2_ampm'),
-        tz2_tz = document.getElementById('tz2_tz'),
         date, hours, date2, hours2, minutes;
 
     date = updateTime();
-    
-    displayWeekDay(date);
-    date2 = date.toTimezone(tz2);
-    displayWeekDay2(date2);
-    str_tz.innerHTML = tz1abbr;
-    tz2_tz.innerHTML = tz2abbr;
+    //date = tizen.time.getCurrentDateTime();
     hours = date.getHours();
-    hours2 = date2.getHours();
     minutes = date.getMinutes();
-    str_minutes.innerHTML = minutes;
-    tz2_min.innerHTML = minutes;
+    date2 = date.toTimezone(tz2);
+    hours2 = date2.getHours();
     
     if (minutes < 10) {
         str_minutes.innerHTML = '0' + minutes;
         tz2_min.innerHTML = '0' + minutes;
-    }
-
-    if (hours > 12) {
-    	hours = hours - 12;
-    	str_hours.innerHTML = hours;
-    	str_ampm.innerHTML = 'PM';
-    } else if (hours == 12) {
-    	str_hours.innerHTML = hours;
-    	str_ampm.innerHTML = 'PM';
-    } else if (hours == 0) {
-    	str_hours.innerHTML = '12';
-    	str_ampm.innerHTML = 'AM';
     } else {
-    	str_hours.innerHTML = hours;
-        str_ampm.innerHTML = 'AM';
+    	str_minutes.innerHTML = minutes;
+    	tz2_min.innerHTML = minutes;
     }
     
-    if (hours2 > 12) {
-    	hours2 = hours2 - 12;
-    	tz2_hour.innerHTML = hours2;
-    	tz2_ampm.innerHTML = 'PM';
-    } else if (hours2 == 12) {
-    	tz2_hour.innerHTML = hours2;
-    	tz2_ampm.innerHTML = 'PM';
-    } else if (hours2 == 0) {
-    	tz2_hour.innerHTML = '12';
-    	tz2_ampm.innerHTML = 'AM';
+    if (tz1_24h == '12') {
+	    if (hours > 12) {
+	    	hours = hours - 12;
+	    	str_hours.innerHTML = hours;
+	    	str_ampm.innerHTML = 'PM';
+	    } else if (hours == 12) {
+	    	str_hours.innerHTML = hours;
+	    	str_ampm.innerHTML = 'PM';
+	    } else if (hours == 0) {
+	    	str_hours.innerHTML = '12';
+	    	str_ampm.innerHTML = 'AM';
+	    } else {
+	    	str_hours.innerHTML = hours;
+	        str_ampm.innerHTML = 'AM';
+	    } 
     } else {
-        tz2_ampm.innerHTML = 'AM';
-        tz2_hour.innerHTML = hours2;
+    	str_ampm.innerHTML = '';
+    	if (hours < 10) {
+	    	str_hours.innerHTML = '0' + hours;
+    	} else {
+    		str_hours.innerHTML = hours;
+    	}
     }
+    
+    if (tz2_24h == '12') {
+	    if (hours2 > 12) {
+	    	hours2 = hours2 - 12;
+	    	tz2_hour.innerHTML = hours2;
+	    	tz2_ampm.innerHTML = 'PM';
+	    } else if (hours2 == 12) {
+	    	tz2_hour.innerHTML = hours2;
+	    	tz2_ampm.innerHTML = 'PM';
+	    } else if (hours2 == 0) {
+	    	tz2_hour.innerHTML = '12';
+	    	tz2_ampm.innerHTML = 'AM';
+	    } else {
+	        tz2_ampm.innerHTML = 'AM';
+	        tz2_hour.innerHTML = hours2;
+	    }
+    } else {
+    	tz2_ampm.innerHTML = '';
+    	if (hours2 < 10) {
+    		tz2_hour.innerHTML = '0' + hours2;
+    	} else {
+    		tz2_hour.innerHTML = hours2;
+    	}
+    }
+
+    displayWeekDay(date);
+    displayWeekDay2(date2);
     
     if (flagConsole) {
         str_console.style.visibility = 'visible';
@@ -196,11 +234,9 @@ function initDigitalWatch() {
 
 function renderAmbientDots() {
     context.save();
-
     // Assigns the clock creation location in the middle of the canvas
     context.translate(canvas.width / 2, canvas.height / 2);
     context.beginPath();		// Render center dot
-
     context.fillStyle = '#000000';
     context.strokeStyle = '#c8c6c8';
     context.lineWidth = 4;
@@ -230,7 +266,6 @@ function ambientDigitalWatch() {
     var angleH, radiusH, angleM, radiusM, dtstring,
     	date, hours, minutes, seconds, hour, minute, day,
         full_day = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    
     	date = updateTime();
         hours = date.getHours();
         minutes = date.getMinutes();
@@ -238,7 +273,6 @@ function ambientDigitalWatch() {
         hour = hours + minutes / 60;
         minute = minutes + seconds / 60;
         day = date.getDay();
-        
         dtstring = (date.getMonth()+1) + '.' + date.getDate() + '.' + date.getFullYear();
     
     // Erase the previous time
@@ -256,7 +290,6 @@ function ambientDigitalWatch() {
     renderNeedle(angleM, radiusM);
     
     context.restore();
-    
     context.font = '25px Courier';
     context.textAlign = 'center';
     context.textBaseline = 'middle';
@@ -291,11 +324,6 @@ function bindEvents() {
     battery.addEventListener('dischargingtimechange', getBatteryState);
     battery.addEventListener('levelchange', getBatteryState);
 
-    // add eventListener for time tick (occurs once/min)
-    window.addEventListener('timetick', function() {
-        ambientDigitalWatch();
-    });
-
     // add eventListener for ambient mode changed
     window.addEventListener('ambientmodechanged', function(e) {
         if (e.detail.ambientMode === true) {
@@ -307,6 +335,9 @@ function bindEvents() {
         	document.getElementById('live_watch').style.visibility = 'visible';
         }
     }); 
+    
+    // add eventListener for time tick (occurs once/min)
+    window.addEventListener('timetick', function() { ambientDigitalWatch(); });
 }
 
 window.onload = function() {
@@ -319,20 +350,15 @@ window.onload = function() {
     });
     
     settingsFromFile();
-    
     canvas = document.querySelector("#myCanvas");
     context = canvas.getContext('2d');
     clockRadius = document.body.clientWidth / 2;
     canvas.width = document.body.clientWidth;
     canvas.height = canvas.width;
-    
     localStorage.setItem('com.dendriticspine.awatch.stepcount', 0);
     localStorage.setItem('com.dendriticspine.awatch.temp', 0);
     localStorage.setItem('com.dendriticspine.awatch.weather', Error);
-    document.getElementById('battery_rec').style.color = accentColor;
-    document.getElementById('weather').style.color = accentColor;
-    document.getElementById('weather_word').style.color = accentColor;
     initDigitalWatch();
     bindEvents();
-    loadWeatherData();
+    getBatteryState();
 };
